@@ -223,7 +223,9 @@ const movePiece = destination => ({board, tileSelected, playerTurn}) => ({
       x === tileSelected.x && y === tileSelected.y ? null :
       tile
     )
-  )
+  ),
+  gameover: board[destination.y][destination.x] &&
+    board[destination.y][destination.x].piece === PIECES.KING
 })
 
 class Chess extends Component {
@@ -238,10 +240,15 @@ class Chess extends Component {
   }
 
   render() {
-    const {board, tileSelected, playerTurn} = this.state
+    const {board, tileSelected, playerTurn, gameover} = this.state
     const tileMoves = selectedTileMoves(tileSelected, board)
     return (
       <div>
+        <div>
+          {gameover ? 
+            `${playerTurn === PLAYERS.WHITE ? 'Black' : 'White'} wins!` :
+            `${playerTurn === PLAYERS.WHITE ? 'White' : 'Black'}'s turn`}
+        </div>
         {board.map((row, y) =>
           <div key={y} style={{display: 'flex'}}>
             {row.map((tile, x) => {
@@ -252,12 +259,14 @@ class Chess extends Component {
               return (
                 <div key={x}
                   onClick={() => {
-                    const tileThatIsCurrentlySelected = board[tileSelected.y] && board[tileSelected.y][tileSelected.x]
-                    const isPossibleMove = tileMoves.some(move => move.x === x && move.y === y)
-                    if (tileThatIsCurrentlySelected && tileThatIsCurrentlySelected.player === playerTurn && isPossibleMove) {
-                      this.setState(movePiece({x, y}))
-                    } else {
-                      this.setState(selectTile({x, y}))
+                    if (!gameover) {
+                      const tileThatIsCurrentlySelected = board[tileSelected.y] && board[tileSelected.y][tileSelected.x]
+                      const isPossibleMove = tileMoves.some(move => move.x === x && move.y === y)
+                      if (tileThatIsCurrentlySelected && tileThatIsCurrentlySelected.player === playerTurn && isPossibleMove) {
+                        this.setState(movePiece({x, y}))
+                      } else {
+                        this.setState(selectTile({x, y}))
+                      }
                     }
                   }}
                   style={{
