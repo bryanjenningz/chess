@@ -72,18 +72,22 @@ const selectedTileMoves = ({x, y}, board) => {
         // top
         for (let i = 1; i <= 7 && y - i >= 0 && (board[y - i][x] === null || board[y - i][x].player !== player); i++) {
           moves.push({x, y: y - i})
+          if (board[y - i][x]) break
         }
         // bottom
         for (let i = 1; i <= 7 && y + i < 8 && (board[y + i][x] === null || board[y + i][x].player !== player); i++) {
           moves.push({x, y: y + i})
+          if (board[y + i][x]) break
         }
         // left
         for (let i = 1; i <= 7 && x - i >= 0 && (board[y][x - i] === null || board[y][x - i].player !== player); i++) {
           moves.push({x: x - i, y})
+          if (board[y][x - i]) break
         }
         // right
         for (let i = 1; i <= 7 && x + i < 8 && (board[y][x + i] === null || board[y][x + i].player !== player); i++) {
           moves.push({x: x + i, y})
+          if (board[y][x + i]) break
         }
         return moves
       }
@@ -116,18 +120,22 @@ const selectedTileMoves = ({x, y}, board) => {
         // top-left
         for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && (board[y - i][x - i] === null || board[y - i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y - i})
+          if (board[y - i][x - i]) break
         }
         // top-right
         for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && (board[y - i][x + i] === null || board[y - i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y - i})
+          if (board[y - i][x + i]) break
         }
         // bottom-left
         for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && (board[y + i][x - i] === null || board[y + i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y + i})
+          if (board[y + i][x - i]) break
         }
         // bottom-right
         for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && (board[y + i][x + i] === null || board[y + i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y + i})
+          if (board[y + i][x + i]) break
         }
         return moves
       }
@@ -137,34 +145,42 @@ const selectedTileMoves = ({x, y}, board) => {
         // top
         for (let i = 1; i <= 7 && y - i >= 0 && (board[y - i][x] === null || board[y - i][x].player !== player); i++) {
           moves.push({x, y: y - i})
+          if (board[y - i][x]) break
         }
         // bottom
         for (let i = 1; i <= 7 && y + i < 8 && (board[y + i][x] === null || board[y + i][x].player !== player); i++) {
           moves.push({x, y: y + i})
+          if (board[y + i][x]) break
         }
         // left
         for (let i = 1; i <= 7 && x - i >= 0 && (board[y][x - i] === null || board[y][x - i].player !== player); i++) {
           moves.push({x: x - i, y})
+          if (board[y][x - i]) break
         }
         // right
         for (let i = 1; i <= 7 && x + i < 8 && (board[y][x + i] === null || board[y][x + i].player !== player); i++) {
           moves.push({x: x + i, y})
+          if (board[y][x + i]) break
         }
         // top-left
         for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && (board[y - i][x - i] === null || board[y - i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y - i})
+          if (board[y - i][x - i]) break
         }
         // top-right
         for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && (board[y - i][x + i] === null || board[y - i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y - i})
+          if (board[y - i][x + i]) break
         }
         // bottom-left
         for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && (board[y + i][x - i] === null || board[y + i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y + i})
+          if (board[y + i][x - i]) break
         }
         // bottom-right
         for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && (board[y + i][x + i] === null || board[y + i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y + i})
+          if (board[y + i][x + i]) break
         }
         return moves
       }
