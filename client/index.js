@@ -3,7 +3,6 @@ import {render} from 'react-dom'
 
 const PIECES = {PAWN: 1, ROOK: 2, KNIGHT: 3, BISHOP: 4, QUEEN: 5, KING: 6}
 const PLAYERS = {WHITE: 1, BLACK: 2}
-const PIECES_UNICODE = {}
 
 const range = (lo, hi) => Array.from({length: hi - lo}, (_, i) => lo + i)
 
@@ -37,40 +36,46 @@ const tileToUnicode = ({piece, player}) => {
   }
 }
 
+const selectTile = (selection) => () => ({tileSelected: selection})
+
 class Chess extends Component {
   constructor() {
     super()
     this.state = {
       board: initialBoard, // [{piece, player} | null]
       playerTurn: PLAYERS.WHITE, // player
-      tileSelected: [-1, -1], // [int, int]
+      tileSelected: {x: -1, y: -1}, // {x: int, y: int}
       gameover: false // bool
     }
   }
 
   render() {
-    const {board} = this.state
+    const {board, tileSelected} = this.state
     return (
       <div>
-        {board.map((row, j) =>
-          <div key={j} style={{display: 'flex'}}>
-            {row.map((tile, i) =>
-              <div key={i}
-                style={{
-                  backgroundColor: (i + j) % 2 === 0 ? '#eee' : '#444',
-                  width: 50,
-                  height: 50,
-                  fontSize: 32,
-                  textAlign: 'center',
-                  // This makes the '.' invisible. The reason why we use '.'
-                  // for blank tiles is so the tile styling will be applied.
-                  color: tile === null ?
-                    ((i + j) % 2 === 0 ? '#eee' : '#444') :
-                    ''
-                }}>
-                {tile === null ? '.' : tileToUnicode(tile)}
-              </div>
-            )}
+        {board.map((row, y) =>
+          <div key={y} style={{display: 'flex'}}>
+            {row.map((tile, x) => {
+              const backgroundColor =
+                x === tileSelected.x && y === tileSelected.y ? 'skyblue' :
+                (x + y) % 2 === 0 ? '#eee' : '#444'
+              return (
+                <div key={x}
+                  onClick={() => this.setState(selectTile({x, y}))}
+                  style={{
+                    backgroundColor,
+                    width: 50,
+                    height: 50,
+                    fontSize: 32,
+                    textAlign: 'center',
+                    // This makes the '.' invisible. The reason why we use '.'
+                    // for blank tiles is so the tile styling will be applied.
+                    color: tile === null ? backgroundColor : ''
+                  }}>
+                  {tile === null ? '.' : tileToUnicode(tile)}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
