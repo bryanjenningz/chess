@@ -46,11 +46,23 @@ const selectedTileMoves = ({x, y}, board) => {
         for (let i = 1; i <= 2 && y - i >= 0 && !board[y - i][x]; i++) {
           moves.push({x, y: y - i})
         }
+        if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] && board[y - 1][x - 1].player === PLAYERS.BLACK) {
+          moves.push({x: x - 1, y: y - 1})
+        }
+        if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] && board[y - 1][x + 1].player === PLAYERS.BLACK) {
+          moves.push({x: x + 1, y: y - 1})
+        }
         return moves
       } else {
         const moves = []
         for (let i = 1; i <= 2 && y + i < 8 && !board[y + i][x]; i++) {
           moves.push({x, y: y + i})
+        }
+        if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] && board[y + 1][x - 1].player === PLAYERS.WHITE) {
+          moves.push({x: x - 1, y: y + 1})
+        }
+        if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] && board[y + 1][x + 1].player === PLAYERS.WHITE) {
+          moves.push({x: x + 1, y: y + 1})
         }
         return moves
       }
