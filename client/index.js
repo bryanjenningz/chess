@@ -36,6 +36,154 @@ const tileToUnicode = ({piece, player}) => {
   }
 }
 
+const selectedTileMoves = ({x, y}, board) => {
+  if (!board[y] || board[y][x] === null) return []
+  const {piece, player} = board[y][x]
+  switch (piece) {
+    case PIECES.PAWN:
+      if (player === PLAYERS.WHITE) {
+        const moves = []
+        for (let i = 1; i <= 2 && y - i >= 0 && !board[y - i][x]; i++) {
+          moves.push({x, y: y - i})
+        }
+        return moves
+      } else {
+        const moves = []
+        for (let i = 1; i <= 2 && y + i < 8 && !board[y + i][x]; i++) {
+          moves.push({x, y: y + i})
+        }
+        return moves
+      }
+    case PIECES.ROOK:
+      {
+        const moves = []
+        // top
+        for (let i = 1; i <= 7 && y - i >= 0 && board[y - i][x].player !== player; i++) {
+          moves.push({x, y: y - i})
+        }
+        // bottom
+        for (let i = 1; i <= 7 && y + i < 8 && board[y + i][x].player !== player; i++) {
+          moves.push({x, y: y + i})
+        }
+        // left
+        for (let i = 1; i <= 7 && x - i >= 0 && board[y][x - i].player !== player; i++) {
+          moves.push({x: x - i, y})
+        }
+        // right
+        for (let i = 1; i <= 7 && x + i < 8 && board[y][x + i].player !== player; i++) {
+          moves.push({x: x + i, y})
+        }
+        return moves
+      }
+    case PIECES.KNIGHT:
+      {
+        const knightMoves = [
+          {x: -2, y: -1},
+          {x: -1, y: -2},
+          {x: 1, y: -2},
+          {x: 2, y: -1},
+          {x: 2, y: 1},
+          {x: 1, y: 2},
+          {x: -1, y: 2},
+          {x: -2, y: 1}
+        ]
+        return knightMoves.filter(offset => {
+          if (y + offset.y >= 8 || y + offset.y < 0 || x + offset.x >= 8 || x + offset.x < 0) {
+            return false
+          }
+          const tile = board[y + offset.y][x + offset.x]
+          return tile === null || tile.player !== player
+        }).map(offset => ({
+          x: x + offset.x,
+          y: y + offset.y
+        }))
+      }
+    case PIECES.BISHOP:
+      {
+        const moves = []
+        // top-left
+        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && board[y - i][x - i].player !== player; i++) {
+          moves.push({x: x - i, y: y - i})
+        }
+        // top-right
+        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && board[y - i][x + i].player !== player; i++) {
+          moves.push({x: x + i, y: y - i})
+        }
+        // bottom-left
+        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && board[y + i][x - i].player !== player; i++) {
+          moves.push({x: x - i, y: y + i})
+        }
+        // bottom-right
+        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && board[y + i][x + i].player !== player; i++) {
+          moves.push({x: x + i, y: y + i})
+        }
+        return moves
+      }
+    case PIECES.QUEEN:
+      {
+        const moves = []
+        // top
+        for (let i = 1; i <= 7 && y - i >= 0 && board[y - i][x].player !== player; i++) {
+          moves.push({x, y: y - i})
+        }
+        // bottom
+        for (let i = 1; i <= 7 && y + i < 8 && board[y + i][x].player !== player; i++) {
+          moves.push({x, y: y + i})
+        }
+        // left
+        for (let i = 1; i <= 7 && x - i >= 0 && board[y][x - i].player !== player; i++) {
+          moves.push({x: x - i, y})
+        }
+        // right
+        for (let i = 1; i <= 7 && x + i < 8 && board[y][x + i].player !== player; i++) {
+          moves.push({x: x + i, y})
+        }
+        // top-left
+        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && board[y - i][x - i].player !== player; i++) {
+          moves.push({x: x - i, y: y - i})
+        }
+        // top-right
+        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && board[y - i][x + i].player !== player; i++) {
+          moves.push({x: x + i, y: y - i})
+        }
+        // bottom-left
+        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && board[y + i][x - i].player !== player; i++) {
+          moves.push({x: x - i, y: y + i})
+        }
+        // bottom-right
+        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && board[y + i][x + i].player !== player; i++) {
+          moves.push({x: x + i, y: y + i})
+        }
+        return moves
+      }
+    case PIECES.KING:
+      {
+        const kingMoves = [
+          {x: -1, y: -1},
+          {x: 0, y: -1},
+          {x: 1, y: -1},
+          {x: 1, y: 0},
+          {x: 1, y: 1},
+          {x: 0, y: 1},
+          {x: -1, y: 1},
+          {x: -1, y: 0}
+        ]
+        return kingMoves.filter(offset => {
+          if (y + offset.y >= 8 || y + offset.y < 0 || x + offset.x >= 8 || x + offset.x < 0) {
+            return false
+          }
+          const tile = board[y + offset.y][x + offset.x]
+          return tile.player !== player
+        }).map(offset => ({
+          x: x + offset.x,
+          y: y + offset.y
+        }))
+      }
+    default:
+      throw new Error(`Invalid piece: ${piece}`)
+  }
+}
+
 const selectTile = (selection) => () => ({tileSelected: selection})
 
 class Chess extends Component {
@@ -51,6 +199,7 @@ class Chess extends Component {
 
   render() {
     const {board, tileSelected} = this.state
+    const tileMoves = selectedTileMoves(tileSelected, board)
     return (
       <div>
         {board.map((row, y) =>
@@ -58,6 +207,7 @@ class Chess extends Component {
             {row.map((tile, x) => {
               const backgroundColor =
                 x === tileSelected.x && y === tileSelected.y ? 'skyblue' :
+                tileMoves.some(tileMove => tileMove.x === x && tileMove.y === y) ? 'dodgerblue' :
                 (x + y) % 2 === 0 ? '#eee' : '#444'
               return (
                 <div key={x}
