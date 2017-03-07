@@ -58,19 +58,19 @@ const selectedTileMoves = ({x, y}, board) => {
       {
         const moves = []
         // top
-        for (let i = 1; i <= 7 && y - i >= 0 && board[y - i][x].player !== player; i++) {
+        for (let i = 1; i <= 7 && y - i >= 0 && (board[y - i][x] === null || board[y - i][x].player !== player); i++) {
           moves.push({x, y: y - i})
         }
         // bottom
-        for (let i = 1; i <= 7 && y + i < 8 && board[y + i][x].player !== player; i++) {
+        for (let i = 1; i <= 7 && y + i < 8 && (board[y + i][x] === null || board[y + i][x].player !== player); i++) {
           moves.push({x, y: y + i})
         }
         // left
-        for (let i = 1; i <= 7 && x - i >= 0 && board[y][x - i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x - i >= 0 && (board[y][x - i] === null || board[y][x - i].player !== player); i++) {
           moves.push({x: x - i, y})
         }
         // right
-        for (let i = 1; i <= 7 && x + i < 8 && board[y][x + i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x + i < 8 && (board[y][x + i] === null || board[y][x + i].player !== player); i++) {
           moves.push({x: x + i, y})
         }
         return moves
@@ -102,19 +102,19 @@ const selectedTileMoves = ({x, y}, board) => {
       {
         const moves = []
         // top-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && board[y - i][x - i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && (board[y - i][x - i] === null || board[y - i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y - i})
         }
         // top-right
-        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && board[y - i][x + i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && (board[y - i][x + i] === null || board[y - i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y - i})
         }
         // bottom-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && board[y + i][x - i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && (board[y + i][x - i] === null || board[y + i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y + i})
         }
         // bottom-right
-        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && board[y + i][x + i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && (board[y + i][x + i] === null || board[y + i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y + i})
         }
         return moves
@@ -123,35 +123,35 @@ const selectedTileMoves = ({x, y}, board) => {
       {
         const moves = []
         // top
-        for (let i = 1; i <= 7 && y - i >= 0 && board[y - i][x].player !== player; i++) {
+        for (let i = 1; i <= 7 && y - i >= 0 && (board[y - i][x] === null || board[y - i][x].player !== player); i++) {
           moves.push({x, y: y - i})
         }
         // bottom
-        for (let i = 1; i <= 7 && y + i < 8 && board[y + i][x].player !== player; i++) {
+        for (let i = 1; i <= 7 && y + i < 8 && (board[y + i][x] === null || board[y + i][x].player !== player); i++) {
           moves.push({x, y: y + i})
         }
         // left
-        for (let i = 1; i <= 7 && x - i >= 0 && board[y][x - i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x - i >= 0 && (board[y][x - i] === null || board[y][x - i].player !== player); i++) {
           moves.push({x: x - i, y})
         }
         // right
-        for (let i = 1; i <= 7 && x + i < 8 && board[y][x + i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x + i < 8 && (board[y][x + i] === null || board[y][x + i].player !== player); i++) {
           moves.push({x: x + i, y})
         }
         // top-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && board[y - i][x - i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && (board[y - i][x - i] === null || board[y - i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y - i})
         }
         // top-right
-        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && board[y - i][x + i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && (board[y - i][x + i] === null || board[y - i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y - i})
         }
         // bottom-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && board[y + i][x - i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && (board[y + i][x - i] === null || board[y + i][x - i].player !== player); i++) {
           moves.push({x: x - i, y: y + i})
         }
         // bottom-right
-        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && board[y + i][x + i].player !== player; i++) {
+        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && (board[y + i][x + i] === null || board[y + i][x + i].player !== player); i++) {
           moves.push({x: x + i, y: y + i})
         }
         return moves
@@ -173,7 +173,7 @@ const selectedTileMoves = ({x, y}, board) => {
             return false
           }
           const tile = board[y + offset.y][x + offset.x]
-          return tile.player !== player
+          return tile === null || tile.player !== player
         }).map(offset => ({
           x: x + offset.x,
           y: y + offset.y
@@ -185,6 +185,18 @@ const selectedTileMoves = ({x, y}, board) => {
 }
 
 const selectTile = (selection) => () => ({tileSelected: selection})
+
+const movePiece = destination => ({board, tileSelected, playerTurn}) => ({
+  tileSelected: {x: -1, y: -1},
+  playerTurn: playerTurn === PLAYERS.WHITE ? PLAYERS.BLACK : PLAYERS.WHITE,
+  board: board.map((row, y) =>
+    row.map((tile, x) => 
+      x === destination.x && y === destination.y ? board[tileSelected.y][tileSelected.x] :
+      x === tileSelected.x && y === tileSelected.y ? null :
+      tile
+    )
+  )
+})
 
 class Chess extends Component {
   constructor() {
@@ -198,7 +210,7 @@ class Chess extends Component {
   }
 
   render() {
-    const {board, tileSelected} = this.state
+    const {board, tileSelected, playerTurn} = this.state
     const tileMoves = selectedTileMoves(tileSelected, board)
     return (
       <div>
@@ -211,7 +223,15 @@ class Chess extends Component {
                 (x + y) % 2 === 0 ? '#eee' : '#444'
               return (
                 <div key={x}
-                  onClick={() => this.setState(selectTile({x, y}))}
+                  onClick={() => {
+                    const tileThatIsCurrentlySelected = board[tileSelected.y] && board[tileSelected.y][tileSelected.x]
+                    const isPossibleMove = tileMoves.some(move => move.x === x && move.y === y)
+                    if (tileThatIsCurrentlySelected && tileThatIsCurrentlySelected.player === playerTurn && isPossibleMove) {
+                      this.setState(movePiece({x, y}))
+                    } else {
+                      this.setState(selectTile({x, y}))
+                    }
+                  }}
                   style={{
                     backgroundColor,
                     width: 50,
