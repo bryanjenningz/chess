@@ -1,44 +1,66 @@
 import React, {Component} from 'react'
 import {render} from 'react-dom'
+import range from 'lodash/range'
 
 const PIECES = {PAWN: 1, ROOK: 2, KNIGHT: 3, BISHOP: 4, QUEEN: 5, KING: 6}
-const PLAYERS = {WHITE: 1, BLACK: 2}
-
-const range = (lo, hi) => Array.from({length: hi - lo}, (_, i) => lo + i)
-
+const PLAYERS = {WHITE: 7, BLACK: 8}
+const backRow = [PIECES.ROOK, PIECES.KNIGHT, PIECES.BISHOP, PIECES.QUEEN, PIECES.KING, PIECES.BISHOP, PIECES.KNIGHT, PIECES.ROOK]
 const initialBoard = [
-  [PIECES.ROOK, PIECES.KNIGHT, PIECES.BISHOP, PIECES.QUEEN, PIECES.KING, PIECES.BISHOP, PIECES.KNIGHT, PIECES.ROOK].map(piece => ({piece, player: PLAYERS.BLACK})),
-  range(0, 8).map(() => ({piece: PIECES.PAWN, player: PLAYERS.BLACK})),
-  range(0, 8).map(() => null),
-  range(0, 8).map(() => null),
-  range(0, 8).map(() => null),
-  range(0, 8).map(() => null),
-  range(0, 8).map(() => ({piece: PIECES.PAWN, player: PLAYERS.WHITE})),
-  [PIECES.ROOK, PIECES.KNIGHT, PIECES.BISHOP, PIECES.KING, PIECES.QUEEN, PIECES.BISHOP, PIECES.KNIGHT, PIECES.ROOK].map(piece => ({piece, player: PLAYERS.WHITE}))
+  backRow.map(piece => ({piece, player: PLAYERS.BLACK})),
+  range(8).map(() => ({piece: PIECES.PAWN, player: PLAYERS.BLACK})),
+  range(8).map(() => null),
+  range(8).map(() => null),
+  range(8).map(() => null),
+  range(8).map(() => null),
+  range(8).map(() => ({piece: PIECES.PAWN, player: PLAYERS.WHITE})),
+  backRow.map(piece => ({piece, player: PLAYERS.WHITE}))
 ]
 
 const tileToUnicode = ({piece, player}) => {
   switch (piece) {
-    case PIECES.PAWN:
-      return player === PLAYERS.WHITE ? '♙' : '♟'
-    case PIECES.ROOK:
-      return player === PLAYERS.WHITE ? '♖' : '♜'
-    case PIECES.KNIGHT:
-      return player === PLAYERS.WHITE ? '♘' : '♞'
-    case PIECES.BISHOP:
-      return player === PLAYERS.WHITE ? '♗' : '♝'
-    case PIECES.QUEEN:
-      return player === PLAYERS.WHITE ? '♕' : '♛'
-    case PIECES.KING:
-      return player === PLAYERS.WHITE ? '♔' : '♚'
-    default:
-      throw new Error(`Invalid piece: ${piece}`)
+    case PIECES.PAWN: return {[PLAYERS.WHITE]: '♙', [PLAYERS.BLACK]: '♟'}[player]
+    case PIECES.ROOK: return {[PLAYERS.WHITE]: '♖', [PLAYERS.BLACK]: '♜'}[player]
+    case PIECES.KNIGHT: return {[PLAYERS.WHITE]: '♘', [PLAYERS.BLACK]: '♞'}[player]
+    case PIECES.BISHOP: return {[PLAYERS.WHITE]: '♗', [PLAYERS.BLACK]: '♝'}[player]
+    case PIECES.QUEEN: return {[PLAYERS.WHITE]: '♕', [PLAYERS.BLACK]: '♛'}[player]
+    case PIECES.KING: return {[PLAYERS.WHITE]: '♔', [PLAYERS.BLACK]: '♚'}[player]
+    default: throw new Error(`Invalid piece: ${piece}`)
   }
 }
 
 const selectedTileMoves = ({x, y}, board) => {
   if (!board[y] || board[y][x] === null) return []
   const {piece, player} = board[y][x]
+  const isValidMove = ({x, y}) => x >= 0 && x <= 7 && y >= 0 && y <= 7 && (board[y][x] === null || board[y][x].player !== player)
+  const directionMoves = direction => {
+    const moves = []
+    for (let i = 1; i <= 7 && isValidMove(direction(x, y, i)); i++) {
+      moves.push(direction(x, y, i))
+      if (board[direction(x, y, i).y][direction(x, y, i).x]) break
+    }
+    return moves
+  }
+  const rookMoves = () => [
+    ...directionMoves((x, y, i) => ({x: x - i, y})),
+    ...directionMoves((x, y, i) => ({x: x + i, y})),
+    ...directionMoves((x, y, i) => ({x, y: y - i})),
+    ...directionMoves((x, y, i) => ({x, y: y + i}))
+  ]
+  const bishopMoves = () => [
+    ...directionMoves((x, y, i) => ({x: x - i, y: y - i})),
+    ...directionMoves((x, y, i) => ({x: x - i, y: y + i})),
+    ...directionMoves((x, y, i) => ({x: x + i, y: y - i})),
+    ...directionMoves((x, y, i) => ({x: x + i, y: y + i}))
+  ]
+  const validMoves = (moveOffsets) => {
+    return moveOffsets.filter(offset => {
+      if (!isValidMove({x: x + offset.x, y: y + offset.y})) {
+        return false
+      }
+      const tile = board[y + offset.y][x + offset.x]
+      return tile === null || tile.player !== player
+    }).map(offset => ({x: x + offset.x, y: y + offset.y}))
+  }
   switch (piece) {
     case PIECES.PAWN:
       if (player === PLAYERS.WHITE) {
@@ -67,146 +89,17 @@ const selectedTileMoves = ({x, y}, board) => {
         return moves
       }
     case PIECES.ROOK:
-      {
-        const moves = []
-        // top
-        for (let i = 1; i <= 7 && y - i >= 0 && (board[y - i][x] === null || board[y - i][x].player !== player); i++) {
-          moves.push({x, y: y - i})
-          if (board[y - i][x]) break
-        }
-        // bottom
-        for (let i = 1; i <= 7 && y + i < 8 && (board[y + i][x] === null || board[y + i][x].player !== player); i++) {
-          moves.push({x, y: y + i})
-          if (board[y + i][x]) break
-        }
-        // left
-        for (let i = 1; i <= 7 && x - i >= 0 && (board[y][x - i] === null || board[y][x - i].player !== player); i++) {
-          moves.push({x: x - i, y})
-          if (board[y][x - i]) break
-        }
-        // right
-        for (let i = 1; i <= 7 && x + i < 8 && (board[y][x + i] === null || board[y][x + i].player !== player); i++) {
-          moves.push({x: x + i, y})
-          if (board[y][x + i]) break
-        }
-        return moves
-      }
+      return rookMoves()
     case PIECES.KNIGHT:
-      {
-        const knightMoves = [
-          {x: -2, y: -1},
-          {x: -1, y: -2},
-          {x: 1, y: -2},
-          {x: 2, y: -1},
-          {x: 2, y: 1},
-          {x: 1, y: 2},
-          {x: -1, y: 2},
-          {x: -2, y: 1}
-        ]
-        return knightMoves.filter(offset => {
-          if (y + offset.y >= 8 || y + offset.y < 0 || x + offset.x >= 8 || x + offset.x < 0) {
-            return false
-          }
-          const tile = board[y + offset.y][x + offset.x]
-          return tile === null || tile.player !== player
-        }).map(offset => ({
-          x: x + offset.x,
-          y: y + offset.y
-        }))
-      }
+      const knightMoves = [{x: -2, y: -1}, {x: -1, y: -2}, {x: 1, y: -2}, {x: 2, y: -1}, {x: 2, y: 1}, {x: 1, y: 2}, {x: -1, y: 2}, {x: -2, y: 1}]
+      return validMoves(knightMoves)
     case PIECES.BISHOP:
-      {
-        const moves = []
-        // top-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && (board[y - i][x - i] === null || board[y - i][x - i].player !== player); i++) {
-          moves.push({x: x - i, y: y - i})
-          if (board[y - i][x - i]) break
-        }
-        // top-right
-        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && (board[y - i][x + i] === null || board[y - i][x + i].player !== player); i++) {
-          moves.push({x: x + i, y: y - i})
-          if (board[y - i][x + i]) break
-        }
-        // bottom-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && (board[y + i][x - i] === null || board[y + i][x - i].player !== player); i++) {
-          moves.push({x: x - i, y: y + i})
-          if (board[y + i][x - i]) break
-        }
-        // bottom-right
-        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && (board[y + i][x + i] === null || board[y + i][x + i].player !== player); i++) {
-          moves.push({x: x + i, y: y + i})
-          if (board[y + i][x + i]) break
-        }
-        return moves
-      }
+      return bishopMoves()
     case PIECES.QUEEN:
-      {
-        const moves = []
-        // top
-        for (let i = 1; i <= 7 && y - i >= 0 && (board[y - i][x] === null || board[y - i][x].player !== player); i++) {
-          moves.push({x, y: y - i})
-          if (board[y - i][x]) break
-        }
-        // bottom
-        for (let i = 1; i <= 7 && y + i < 8 && (board[y + i][x] === null || board[y + i][x].player !== player); i++) {
-          moves.push({x, y: y + i})
-          if (board[y + i][x]) break
-        }
-        // left
-        for (let i = 1; i <= 7 && x - i >= 0 && (board[y][x - i] === null || board[y][x - i].player !== player); i++) {
-          moves.push({x: x - i, y})
-          if (board[y][x - i]) break
-        }
-        // right
-        for (let i = 1; i <= 7 && x + i < 8 && (board[y][x + i] === null || board[y][x + i].player !== player); i++) {
-          moves.push({x: x + i, y})
-          if (board[y][x + i]) break
-        }
-        // top-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y - i >= 0 && (board[y - i][x - i] === null || board[y - i][x - i].player !== player); i++) {
-          moves.push({x: x - i, y: y - i})
-          if (board[y - i][x - i]) break
-        }
-        // top-right
-        for (let i = 1; i <= 7 && x + i < 8 && y - i >= 0 && (board[y - i][x + i] === null || board[y - i][x + i].player !== player); i++) {
-          moves.push({x: x + i, y: y - i})
-          if (board[y - i][x + i]) break
-        }
-        // bottom-left
-        for (let i = 1; i <= 7 && x - i >= 0 && y + i < 8 && (board[y + i][x - i] === null || board[y + i][x - i].player !== player); i++) {
-          moves.push({x: x - i, y: y + i})
-          if (board[y + i][x - i]) break
-        }
-        // bottom-right
-        for (let i = 1; i <= 7 && x + i < 8 && y + i < 8 && (board[y + i][x + i] === null || board[y + i][x + i].player !== player); i++) {
-          moves.push({x: x + i, y: y + i})
-          if (board[y + i][x + i]) break
-        }
-        return moves
-      }
+      return [...rookMoves(), ...bishopMoves()]
     case PIECES.KING:
-      {
-        const kingMoves = [
-          {x: -1, y: -1},
-          {x: 0, y: -1},
-          {x: 1, y: -1},
-          {x: 1, y: 0},
-          {x: 1, y: 1},
-          {x: 0, y: 1},
-          {x: -1, y: 1},
-          {x: -1, y: 0}
-        ]
-        return kingMoves.filter(offset => {
-          if (y + offset.y >= 8 || y + offset.y < 0 || x + offset.x >= 8 || x + offset.x < 0) {
-            return false
-          }
-          const tile = board[y + offset.y][x + offset.x]
-          return tile === null || tile.player !== player
-        }).map(offset => ({
-          x: x + offset.x,
-          y: y + offset.y
-        }))
-      }
+      const kingMoves = [{x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1}, {x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: -1, y: 1}, {x: -1, y: 0}]
+      return validMoves(kingMoves)
     default:
       throw new Error(`Invalid piece: ${piece}`)
   }
@@ -275,11 +168,8 @@ class Chess extends Component {
                     height: 50,
                     fontSize: 32,
                     textAlign: 'center',
-                    // This makes the '.' invisible. The reason why we use '.'
-                    // for blank tiles is so the tile styling will be applied.
-                    color: tile === null ? backgroundColor : ''
                   }}>
-                  {tile === null ? '.' : tileToUnicode(tile)}
+                  {tile === null ? '' : tileToUnicode(tile)}
                 </div>
               )
             })}
